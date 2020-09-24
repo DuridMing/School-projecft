@@ -13,24 +13,29 @@ def convert(size, box):
 	h = box[3]*dh
 	return (x, y, w, h)
 
-
+label_name = input("input label name :")
 
 coco = COCO('instances_val2017.json')
 cats = coco.loadCats(coco.getCatIds())
 nms = [cat['name'] for cat in cats]
 # print('COCO categories: \n{}\n'.format(' '.join(nms)))
 
-catIds = coco.getCatIds(catNms=['person'])
+catIds = coco.getCatIds(catNms=[label_name])
 imgIds = coco.getImgIds(catIds=catIds)
 images = coco.loadImgs(imgIds)
 # print("imgIds: ", imgIds)
 # print("images: ", images)
 
 
-with open('person_annotations' + '.csv', mode='w', newline='') as annot:
+with open(label_name + '_annotations' + '.csv', mode='w', newline='') as annot:
+    
+    annot_writer = csv.writer(annot)
+    annot_writer.writerow(["file_name", "classes", "x1", "x2", "y1", "y2"])
+
     for im in images:
         annIds = coco.getAnnIds(imgIds=im['id'], catIds=catIds, iscrowd=None)
         anns = coco.loadAnns(annIds)
+        
         width = im['width']
         height = im['height']
         for i in range(len(anns)):
@@ -40,9 +45,9 @@ with open('person_annotations' + '.csv', mode='w', newline='') as annot:
                 int(round(anns[i]['bbox'][3])),
                 ]
             bb = convert((width, height),box)
-            annot_writer = csv.writer(annot)
+            # annot_writer = csv.writer(annot)
             annot_writer.writerow([im['file_name'], 
-                                    'person' , 
+                                    label_name , 
                                     bb[0] , 
                                     bb[1] , 
                                     bb[2] , 
