@@ -47,7 +47,7 @@ class trans():
         self.df_f = self.df_f.append(temp, ignore_index=True)
         # print(self.df_f)
 
-    def write_csv(self):
+    def write_one_csv(self):
         print(self.df_f)
         with open("metrics.csv", "w", newline='') as csvw:
             csv = Csv.writer(csvw)
@@ -61,7 +61,7 @@ class trans():
     def trans_file(self, one_file=True):
         for dirname in glob.glob('*'):
             if os.path.isdir(dirname):
-                # print(dirname)
+
                 os.chdir(dirname)
                 file = "metrics.json"
                 if os.path.isfile("metrics.json"):
@@ -70,11 +70,12 @@ class trans():
                     if one_file:
                         self.js2csv_in_one(file=file)
                     else:
-                        self.js2csv.js2csv(dir_name=dirname, file=file)
+                        self.js2csv(dir_name=dirname, file=file)
                 os.chdir("..")
+            if one_file:
+                self.write_one_csv()
 
 
 if __name__ == '__main__':
-    trans = trans()
-    trans.trans_file()
-    trans.write_csv()
+    trans = trans(origin_path=os.getcwd)
+    trans.trans_file(one_file=True)
